@@ -8,7 +8,6 @@ class Record:
 
 class DatasetLoader:
 	def load(self, filepath):
-		dataset = pd.DataFrame(columns=['data', 'sentiment'])
 		with open(filepath) as csvfile:
 			reader = csv.reader(csvfile, delimiter=',')	
 			next(reader)
