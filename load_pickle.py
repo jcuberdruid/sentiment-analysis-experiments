@@ -15,12 +15,18 @@ class LoadPickle:
 		sequences = self.df.iloc[:, 0].tolist()
 		text_labels = self.df.iloc[:, 1].tolist()
 		self.labels = [0 if x == 'negative' else 1 for x in text_labels]
-
-		print("##########################################")
+		# for i in range(0, 10):
+		# 	print("##################")
+		# 	print(text_labels[i])
+		# 	print(self.labels[i])
+		# 	print(sequences[i])
+		# 	print("##################")
+		# print("##########################################")
 		print("Padding: ")
-		padded_sequences = pad_sequences(sequences, padding='post')
+		padded_sequences = pad_sequences(sequences, padding='pre') # changed to pre
 		sequences_array = np.array(padded_sequences)
 		labels_array = np.array(self.labels)
+
 		#split labels
 		self.train_data, self.test_data, self.train_labels, self.test_labels = train_test_split(
 		sequences_array, labels_array, test_size=self.train_test_split_ratio)
