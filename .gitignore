@@ -1,1 +1,4 @@
 __pycache__
+best_model.hdf5
+best_lstm_model.hdf5
+best_gru_model.hdf5

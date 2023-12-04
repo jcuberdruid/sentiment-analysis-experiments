@@ -34,7 +34,7 @@ class Preprocessor:
 		])
 		# Remove largest
 		self.df['token_count'] = self.df['data'].map(len)
-		indexes_to_remove = self.df.nlargest(25000, 'token_count').index
+		indexes_to_remove = self.df.nlargest(20000, 'token_count').index
 		self.df = self.df.drop(indexes_to_remove)
 
 		self.process_vectors()
@@ -44,7 +44,7 @@ class Preprocessor:
 		data_w2v = Word2Vec(self.df['data'], vector_size=300, window=5, min_count=1, workers=4)
 		print("Making word vectors...")
 		self.df['data'] = self.df['data'].map(lambda doc: [data_w2v.wv[word] if word in data_w2v.wv else np.zeroes(300) for word in doc])
-		self.df.to_pickle("../results/word_vectors_trained.pkl")
+		self.df.to_pickle("../results/word_vectors_trained_longer.pkl")
 		print("Word vector data saved")
 
 
