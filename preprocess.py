@@ -11,28 +11,25 @@ class Preprocessor:
 		self.df = df
 		self.preprocess()
 
-	def preprocess(self):  # same but removes stop words, numbers, proper nouns, punctuation, spaces, currency symbols etc 
+	def preprocess(self):  
 		print("preprocessing and tokenizing...")
 		nlp = spacy.load('en_core_web_sm', enable=["tagger", "attribute_ruler", "lemmatizer"])
 		print("tokenizing with spacy")
 
-		# Tokenize the data
 		self.df['data'] = list(nlp.pipe(self.df['data'], n_process=8, batch_size=5000))
 
-		# Updated token processing
 		self.df['data'] = self.df['data'].map(lambda doc: [
-			token.lemma_.lower()  # Convert to lemmatized lowercase
+			token.lemma_.lower()  
 			for token in doc
-			if token.is_alpha  # Keep alphabetic tokens
-			and not token.is_stop  # Remove stop words
-			and not token.like_num  # Remove numbers
-			and token.pos_ != 'PROPN'  # Remove proper nouns
-			and not token.is_punct  # Remove punctuation
-			and not token.is_space  # Remove spaces
-			and not token.is_currency  # Remove currency symbols
-			and token.text not in nlp.Defaults.stop_words  # Additional stop word check
+			if token.is_alpha  
+			and not token.is_stop  
+			and not token.like_num 
+			and token.pos_ != 'PROPN'
+			and not token.is_punct  
+			and not token.is_space 
+			and not token.is_currency 
+			and token.text not in nlp.Defaults.stop_words  
 		])
-		# Remove largest
 		self.df['token_count'] = self.df['data'].map(len)
 		indexes_to_remove = self.df.nlargest(20000, 'token_count').index
 		self.df = self.df.drop(indexes_to_remove)

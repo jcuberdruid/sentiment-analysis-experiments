@@ -1,8 +1,9 @@
+from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.models import Sequential
-from keras.layers import LSTM, GRU, SimpleRNN, Dense, Dropout, Masking, Bidirectional, Softmax
-from keras.optimizers import Adam
-from keras.callbacks import ModelCheckpoint, EarlyStopping
+from keras.layers import GRU, LSTM, SimpleRNN, Dense, Dropout, Masking, Bidirectional
 from keras import mixed_precision
+import numpy as np
+import os
 import time
 import json
 
@@ -12,7 +13,7 @@ class GenModel:
     def __init__(self, input_shape, num_classes, activation_function, bidirectional=False, node_type='GRU'):
         self.model = Sequential()
         self.input_shape = input_shape
-        self.num_classes = 2 if activation_function in ['relu', 'tanh'] else num_classes
+        self.num_classes = num_classes
         self.activation_function = activation_function
         self.bidirectional = bidirectional
         self.node_type = node_type
@@ -36,16 +37,10 @@ class GenModel:
             self.model.add(layer)
             if dropout > 0:
                 self.model.add(Dropout(dropout))
-
-        if self.activation_function in ['relu', 'tanh']:
-            self.model.add(Dense(self.num_classes))
-            self.model.add(Softmax())
-        else:
-            self.model.add(Dense(self.num_classes, activation=self.activation_function))
+        self.model.add(Dense(self.num_classes, activation=self.activation_function))
 
     def compile(self, optimizer, loss, metrics):
-        opt = Adam(learning_rate=0.01) 
-        self.model.compile(optimizer=opt, loss=loss, metrics=metrics)
+        self.model.compile(optimizer=optimizer, loss=loss, metrics=metrics)
 
     def train(self, x_train, y_train, x_val, y_val, epochs, batch_size):
         checkpoint = ModelCheckpoint(self.checkpoint_path, monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
@@ -64,7 +59,7 @@ class GenModel:
         return test_accuracy
 
     def save_history(self, history, test_accuracy, training_time):
-        file_path = f"logs/model_info_activation_experiment_acc_{test_accuracy}_{self.node_type}_{self.num_layers}.json"
+        file_path=f"logs/model_info_acc_{test_accuracy}_{self.node_type}_{self.num_layers}.json"
         model_info = {
             "num_nodes": self.num_layers,
             "node_type": self.node_type,
@@ -75,3 +70,5 @@ class GenModel:
         }
         with open(file_path, 'w') as file:
             json.dump(model_info, file)
+
+

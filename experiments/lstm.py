@@ -2,21 +2,18 @@ from dataset.load_pickle import LoadPickle
 from model.lstm import LSTMModel
 import numpy as np
 
-# Load data
 file_path = '../results/word_vectors_trained_longer.pkl'
-test_split_ratio = 0.1  # Modify as needed
-retain_percentage = 100 # Modify as needed
+test_split_ratio = 0.1 
+retain_percentage = 100 
 load_pickle = LoadPickle(file_path, test_split_ratio, retain_percentage)
 load_pickle.process_data()
 
-# Prepare data
 x_train, y_train = load_pickle.train_data, load_pickle.train_labels
 x_train = x_train.astype(np.float32)
 x_test, y_test = load_pickle.test_data, load_pickle.test_labels
 x_test = x_test.astype(np.float32)
 
-# After loading and processing the data
-sequence_length = load_pickle.train_data.shape[1]  # Dynamically get the sequence length
+sequence_length = load_pickle.train_data.shape[1] 
 
 activation_functions = ['sigmoid', 'relu', 'tanh']
 
